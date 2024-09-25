@@ -35,7 +35,7 @@ jobs:
 
       - name: Build an image for ${{ github.event.inputs.device }}
         run: |
-          ./build.sh --device ${{ github.event.inputs.device }}
+          ./build.sh --device ${{ github.event.inputs.device }} -A -f
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3

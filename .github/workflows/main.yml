@@ -1,14 +1,13 @@
-# This is a basic workflow to help you get started with Actions
-
 name: r8q Build
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
+# Controls when the action will run. Allows the workflow to be triggered manually via the GitHub Actions UI
 on:
-  push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+  workflow_dispatch:
+    inputs:
+      device:
+        description: 'Enter the device name (e.g., r8q)'
+        required: true
+        default: 'r8q'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -17,12 +16,6 @@ jobs:
     name: Image Build
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    strategy:
-      max-parallel: 8
-      matrix:
-        device:
-          - r8q
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -40,13 +33,13 @@ jobs:
           sudo apt-get -y install build-essential uuid-dev clang llvm iasl nasm gcc-aarch64-linux-gnu abootimg python3-distutils python3-pil python3-git gettext libgcc-s1:i386 libstdc++6:i386
           sudo apt-get install --install-recommends winehq-stable
 
-      - name: Build an image for ${{ matrix.device }}
+      - name: Build an image for ${{ github.event.inputs.device }}
         run: |
-          ./build.sh --device ${{ matrix.device }}
+          ./build.sh --device ${{ github.event.inputs.device }}
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3
         with: # Artifact name
-          name: ${{ matrix.device }}
+          name: ${{ github.event.inputs.device }}
           # A file, directory or wildcard pattern that describes what to upload
           path: ./*.img
